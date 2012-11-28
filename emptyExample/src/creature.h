@@ -25,6 +25,7 @@ public:
     int adult_size, adult_sides, top_speed, adult_age;
     int start_size, start_sides;
     int curr_size, curr_sides, curr_age;
+    int born_on;
     float xpos, ypos, xvel, yvel, xacc, yacc;
     ofColor adult_color, curr_color, start_color;
 };

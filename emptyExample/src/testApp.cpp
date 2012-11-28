@@ -9,14 +9,13 @@ void testApp::setup(){
 
 //--------------------------------------------------------------
 void testApp::update(){
-
+    for(int i=0; i<creatures.size();i++){
+        creatures[i].update();
+    }
 }
 
 //--------------------------------------------------------------
 void testApp::draw(){
-    if(myswitch){
-
-    }
     
     for(int i=0; i<creatures.size();i++){
         creatures[i].draw();
@@ -27,21 +26,16 @@ void testApp::draw(){
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
     if(key == 'b'){
-        if(myswitch){
-            myswitch = false;
-        } else {
-            myswitch = true;
-        }
         cout << "ba" << endl;
     }
     
     if(key == 'c'){
         creature baby;
         baby.immaculate();
-        cout << "age: " << baby.adult_age << endl;
-        cout << "color: " << baby.adult_color << endl;
-        cout << "sides: " << baby.adult_sides << endl;
-        cout << "size: " << baby.adult_size << endl;
+//        cout << "age: " << baby.adult_age << endl;
+//        cout << "color: " << baby.adult_color << endl;
+//        cout << "sides: " << baby.adult_sides << endl;
+//        cout << "size: " << baby.adult_size << endl;
         creatures.push_back(baby);
     }
 }
