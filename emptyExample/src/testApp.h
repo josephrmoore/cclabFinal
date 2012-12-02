@@ -2,16 +2,22 @@
 
 #include "ofMain.h"
 #include "creature.h"
+#include "ofxBox2d.h"
+#include "Polygon.h"
+#include "ofxOpenNI.h"
+
 
 class testApp : public ofBaseApp{
 	public:
 		void setup();
 		void update();
 		void draw();
-		
+        void exit();
+        
         vector <creature> creatures;
-    
-		void keyPressed(int key);
+        vector <bool> ps;
+		
+        void keyPressed(int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y);
 		void mouseDragged(int x, int y, int button);
@@ -20,5 +26,7 @@ class testApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-        bool myswitch;
+        int maxUsers;
+        void userEvent(ofxOpenNIUserEvent & event);
+        ofxOpenNI openNIDevice;
 };

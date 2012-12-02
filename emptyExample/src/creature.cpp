@@ -21,6 +21,34 @@ void creature::setup() {
     this->curr_color.r = 0;
     this->curr_color.g = 0;
     this->curr_color.b = 0;
+    this->xpos = ofRandom(ofGetWidth());
+    this->ypos = ofRandom(ofGetHeight());
+    this->xvel = ofRandom(5);
+    this->yvel = ofRandom(5);
+    
+    b2Vec2 gravity(0.0f, -10.0f);
+//    doSleep = true;
+//    b2World world(gravity, doSleep);
+//    groundBodyDef.position.Set(0.0f, -10.0f);
+//    groundBody = world.CreateBody(&groundBodyDef);
+        
+    for(int i=0;i<(this->curr_sides);i++){
+        int cX = this->xpos;
+        int cY = this->ypos;
+        float x = cX + (float)(this->curr_size * sin((i+1) * ((2*PI) / this->curr_sides)));
+        float y = cY + (float)(this->curr_size * -cos((i+1) * ((2*PI) / this->curr_sides)));
+        ofPoint point;
+        point.set((int)x, (int)y);
+        points.push_back(point);
+    }
+    
+//    poly = new ofxBox2dPolygon;
+//    for(int j=0;j<points.size();j++){
+//        poly->addVertex(points[j]);
+//    }
+//    poly->setPhysics(3., .5, .3);
+//    poly->create(&world);
+
 }
 
 
@@ -29,7 +57,7 @@ void creature::setup() {
 void creature::update() {
     this->curr_age = (int)((ofGetElapsedTimeMillis() - this->born_on)/1000);
     if(this->curr_age < this->adult_age){
-        float percent = (((ofGetElapsedTimeMillis() - this->born_on)/1000)/(float)this->adult_age);
+        float percent = (((ofGetElapsedTimeMillis() - this->born_on))/((float)this->adult_age*1000));
         this->curr_size = ((this->adult_size-this->start_size)*percent)+this->start_size;
         this->curr_sides = ((this->adult_sides-this->start_sides)*percent)+this->start_sides;
 //        if(this->curr_color.r<this->adult_color.r){
@@ -44,30 +72,79 @@ void creature::update() {
         this->curr_size = this->adult_size;
         this->curr_sides = this->adult_sides;
     }
+    if(this->xpos > ofGetWidth()){
+        this->xpos = ofGetWidth();
+        this->xvel *= -1;
+    } else if (this->xpos < 0){
+        this->xpos = 0;
+        this->xvel *= -1;
+    }
+    if(this->ypos > ofGetHeight()){
+        this->ypos = ofGetHeight();
+        this->yvel *= -1;
+    } else if (this->ypos < 0){
+        this->ypos = 0;
+        this->yvel *= -1;
+    }
+    
+    this->xpos += this->xvel;
+    this->ypos += this->yvel;
 }
 
 
 
 //------------------------------------------------------------------
 void creature::draw() {
-    cout << "born: " << this->born_on << endl;
-    cout << "age: " << this->curr_age << endl;
-    cout << "color: " << this->curr_color << endl;
-    cout << "sides: " << this->curr_sides << endl;
-    cout << "size: " << this->curr_size << endl;
     ofSetPolyMode(OF_POLY_WINDING_NONZERO);
     ofSetColor(this->curr_color.r,this->curr_color.g,this->curr_color.b);
     ofFill();
     ofBeginShape();
     for(int i=0;i<(this->curr_sides);i++){
-        int cX = 300;
-        int cY = 300;
+        int cX = this->xpos;
+        int cY = this->ypos;
         float x = cX + (float)(this->curr_size * sin((i+1) * ((2*PI) / this->curr_sides)));
         float y = cY + (float)(this->curr_size * -cos((i+1) * ((2*PI) / this->curr_sides)));
         ofVertex((int)x, (int)y);
     }
     
     ofEndShape();  
+
+
+//    Polygon poly;
+//    for(int i=0;i<(this->curr_sides);i++){
+//        int cX = this->xpos;
+//        int cY = this->ypos;
+//        float x = cX + (float)(this->curr_size * sin((i+1) * ((2*PI) / this->curr_sides)));
+//        float y = cY + (float)(this->curr_size * -cos((i+1) * ((2*PI) / this->curr_sides)));
+//        points[i].set((int)x, (int)y);
+//        poly.AddVertex(points[i]);
+//    }
+
+//    vector<ofPoint> points;
+//    
+//    for(int i=0;i<(this->curr_sides);i++){
+//        int cX = 300;
+//        int cY = 300;
+//        float x = cX + (float)(this->curr_size * sin((i+1) * ((2*PI) / this->curr_sides)));
+//        float y = cY + (float)(this->curr_size * -cos((i+1) * ((2*PI) / this->curr_sides)));
+//        ofPoint point;
+//        point.set((int)x, (int)y);
+//        points.push_back(point);
+//    }
+//    
+//    ofxBox2dPolygon* poly = new ofxBox2dPolygon;
+//    for(int j=0;j<points.size();j++){
+//        poly->addVertex(points[j]);
+//    }
+//    b2World* world = box2d.getWorld();
+//    poly->setPhysics(3., .5, .3);
+//    
+//    b2PolygonShape polygon;
+//    
+//    polygon.Set(vertices, count);
+//    poly->create(world);
+//    //and then anywhere
+//    poly->draw();
 }
 
 void creature::immaculate(){

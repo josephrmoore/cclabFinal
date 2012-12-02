@@ -11,10 +11,11 @@
 
 
 #include "ofMain.h"
-
+#include "ofxBox2d.h"
+#include "Polygon.h"
 
 class creature {
-	
+
 public:
     void setup();
     void update();
@@ -28,6 +29,13 @@ public:
     int born_on;
     float xpos, ypos, xvel, yvel, xacc, yacc;
     ofColor adult_color, curr_color, start_color;
+    vector<ofPoint> points;
+
+//    bool doSleep;
+//    ofxBox2d box2d;
+//    ofxBox2dPolygon* poly;
+//    b2BodyDef groundBodyDef;    
+//    b2Body* groundBody;
 };
 
 #endif
