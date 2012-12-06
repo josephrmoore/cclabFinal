@@ -26,6 +26,7 @@ void creature::setup() {
     this->xvel = ofRandom(5);
     this->yvel = ofRandom(5);
     this->circle.setPhysics(3.0, 0.53, 0.1);
+    this->hasUser = false;
 
 //    b2Vec2 gravity(0.0f, -10.0f);
 //    doSleep = true;
@@ -152,7 +153,7 @@ void creature::draw() {
 //    poly->draw();
 }
 
-void creature::immaculate(b2World* world){
+void creature::immaculate(b2World* world, int i){
     this->setup();
     this->adult_size = (int)ofRandom(50, 200);
     this->adult_color.r = (int)ofRandom(255);
@@ -163,6 +164,7 @@ void creature::immaculate(b2World* world){
     this->born_on = ofGetElapsedTimeMillis();
     this->circle.setup(world, this->xpos, this->ypos, this->curr_size/2);
     this->circle.setVelocity(this->xvel, this->yvel);
+    this->userId = i;
 }
 
 void creature::livebirth(creature mom, creature dad){

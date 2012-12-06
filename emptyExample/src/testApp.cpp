@@ -5,7 +5,7 @@ void testApp::setup(){
     ofBackground(255, 255, 255);
     ofEnableAlphaBlending();
 	ofSetVerticalSync(true);
-    ofSetLogLevel(OF_LOG_VERBOSE);
+//    ofSetLogLevel(OF_LOG_VERBOSE);
     maxUsers = 2;
     for(int i=0;i<maxUsers;i++){
         ps.push_back(false);
@@ -50,16 +50,15 @@ void testApp::draw(){
     }
     // get number of current users
     int numUsers = openNIDevice.getNumTrackedUsers();
-    
-    if(numUsers<creatures.size()){
+        
+//    if(numUsers<creatures.size()){
 //        for(int i=0;i<creatures.size();i++){
 //            creatures.erase(creatures.begin());
 //            i = 0;
 //        }
-        
-        for(int i=numUsers;i<maxUsers;i++){
-            ps[i] = false;
-        }
+//        for(int i=numUsers;i<maxUsers;i++){
+//            ps[i] = false;
+//        }
 //        
 //        if(numUsers == 1){
 //            p2 = false;
@@ -67,14 +66,56 @@ void testApp::draw(){
 //            p1 = false;
 //            p2 = false;
 //        }
-    }
+//    }
     
     for(int i=0;i<numUsers;i++){
-        if(numUsers == (i+1) && ps[i] == false){
-            creature baby;
-            baby.immaculate(box2d.getWorld());
-            creatures.push_back(baby);
-            ps[i] = true;
+        ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
+            bool thisuser = false;
+            for(int j=0;j<creatures.size();j++){
+                for(int k=0;k<numUsers;k++){
+                    ofxOpenNIUser & user = openNIDevice.getTrackedUser(k);
+                }
+                if(user.getXnID() == creatures[j].userId){
+                    thisuser = true;
+                    if(user.isTracking()){
+                        creatures[j].draw();
+                    } else {
+                        creatures.erase(creatures.begin()+j);
+                    }
+                }
+            }
+            if(!thisuser){
+                creature baby;
+                baby.immaculate(box2d.getWorld(), user.getXnID());
+                creatures.push_back(baby);
+            }
+
+//        cout << "Found:" << endl;
+//        cout << user.isFound() << endl;
+//        cout << "Tracking:" << endl;
+//        cout << user.isTracking() << endl;
+//        cout << "Skeleton:" << endl;
+//        cout << user.isSkeleton() << endl;
+//        cout << "Calibrating:" << endl;
+//        cout << user.isCalibrating() << endl;
+
+//        if(numUsers == (i+1) && ps[i] == false){
+//            creature baby;
+//            baby.immaculate(box2d.getWorld());
+//            creatures.push_back(baby);
+//            ps[i] = true;
+//        }
+    }
+    bool extracreature = false;
+    for(int i=0;i<creatures.size();i++){
+        for(int j=0;j<numUsers;j++){
+            ofxOpenNIUser & user = openNIDevice.getTrackedUser(j);
+            if(user.getXnID() == creatures[j].userId){
+                extracreature = true;
+            }
+        }
+        if(!extracreature){
+            creatures.erase(creatures.begin()+i);
         }
     }
     
@@ -103,9 +144,9 @@ void testApp::keyPressed(int key){
     }
     
     if(key == 'c'){
-        creature baby;
-        baby.immaculate(box2d.getWorld());
-        creatures.push_back(baby);
+//        creature baby;
+//        baby.immaculate(box2d.getWorld());
+//        creatures.push_back(baby);
     }
 }
 
