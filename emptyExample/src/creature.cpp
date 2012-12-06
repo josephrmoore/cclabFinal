@@ -25,22 +25,23 @@ void creature::setup() {
     this->ypos = ofRandom(ofGetHeight());
     this->xvel = ofRandom(5);
     this->yvel = ofRandom(5);
-    
-    b2Vec2 gravity(0.0f, -10.0f);
+    this->circle.setPhysics(3.0, 0.53, 0.1);
+
+//    b2Vec2 gravity(0.0f, -10.0f);
 //    doSleep = true;
 //    b2World world(gravity, doSleep);
 //    groundBodyDef.position.Set(0.0f, -10.0f);
 //    groundBody = world.CreateBody(&groundBodyDef);
         
-    for(int i=0;i<(this->curr_sides);i++){
-        int cX = this->xpos;
-        int cY = this->ypos;
-        float x = cX + (float)(this->curr_size * sin((i+1) * ((2*PI) / this->curr_sides)));
-        float y = cY + (float)(this->curr_size * -cos((i+1) * ((2*PI) / this->curr_sides)));
-        ofPoint point;
-        point.set((int)x, (int)y);
-        points.push_back(point);
-    }
+//    for(int i=0;i<(this->curr_sides);i++){
+//        int cX = this->xpos;
+//        int cY = this->ypos;
+//        float x = cX + (float)(this->curr_size * sin((i+1) * ((2*PI) / this->curr_sides)));
+//        float y = cY + (float)(this->curr_size * -cos((i+1) * ((2*PI) / this->curr_sides)));
+//        ofPoint point;
+//        point.set((int)x, (int)y);
+//        points.push_back(point);
+//    }
     
 //    poly = new ofxBox2dPolygon;
 //    for(int j=0;j<points.size();j++){
@@ -59,7 +60,7 @@ void creature::update() {
     if(this->curr_age < this->adult_age){
         float percent = (((ofGetElapsedTimeMillis() - this->born_on))/((float)this->adult_age*1000));
         this->curr_size = ((this->adult_size-this->start_size)*percent)+this->start_size;
-        this->curr_sides = ((this->adult_sides-this->start_sides)*percent)+this->start_sides;
+//        this->curr_sides = ((this->adult_sides-this->start_sides)*percent)+this->start_sides;
 //        if(this->curr_color.r<this->adult_color.r){
             this->curr_color.r = (int)(this->adult_color.r*percent);
 //        } else if (this->curr_color.g<this->adult_color.g){
@@ -70,7 +71,7 @@ void creature::update() {
     } else {
         this->curr_color = this->adult_color;
         this->curr_size = this->adult_size;
-        this->curr_sides = this->adult_sides;
+//        this->curr_sides = this->adult_sides;
     }
     if(this->xpos > ofGetWidth()){
         this->xpos = ofGetWidth();
@@ -95,21 +96,25 @@ void creature::update() {
 
 //------------------------------------------------------------------
 void creature::draw() {
-    ofSetPolyMode(OF_POLY_WINDING_NONZERO);
-    ofSetColor(this->curr_color.r,this->curr_color.g,this->curr_color.b);
-    ofFill();
-    ofBeginShape();
-    for(int i=0;i<(this->curr_sides);i++){
-        int cX = this->xpos;
-        int cY = this->ypos;
-        float x = cX + (float)(this->curr_size * sin((i+1) * ((2*PI) / this->curr_sides)));
-        float y = cY + (float)(this->curr_size * -cos((i+1) * ((2*PI) / this->curr_sides)));
-        ofVertex((int)x, (int)y);
-    }
     
-    ofEndShape();  
-
-
+//    ofSetPolyMode(OF_POLY_WINDING_NONZERO);
+//    ofSetColor(this->curr_color.r,this->curr_color.g,this->curr_color.b);
+//    ofFill();
+//    ofBeginShape();
+//    for(int i=0;i<(this->curr_sides);i++){
+//        int cX = this->xpos;
+//        int cY = this->ypos;
+//        float x = cX + (float)(this->curr_size * sin((i+1) * ((2*PI) / this->curr_sides)));
+//        float y = cY + (float)(this->curr_size * -cos((i+1) * ((2*PI) / this->curr_sides)));
+//        ofVertex((int)x, (int)y);
+//    }
+//    
+//    ofEndShape();  
+    
+    ofFill();
+    ofSetColor(this->curr_color);
+    this->circle.setRadius(curr_size);
+    this->circle.draw();
 //    Polygon poly;
 //    for(int i=0;i<(this->curr_sides);i++){
 //        int cX = this->xpos;
@@ -147,7 +152,7 @@ void creature::draw() {
 //    poly->draw();
 }
 
-void creature::immaculate(){
+void creature::immaculate(b2World* world){
     this->setup();
     this->adult_size = (int)ofRandom(50, 200);
     this->adult_color.r = (int)ofRandom(255);
@@ -156,6 +161,8 @@ void creature::immaculate(){
     this->adult_age = (int)ofRandom(10,30);
     this->adult_sides = (int)ofRandom(3,11);
     this->born_on = ofGetElapsedTimeMillis();
+    this->circle.setup(world, this->xpos, this->ypos, this->curr_size/2);
+    this->circle.setVelocity(this->xvel, this->yvel);
 }
 
 void creature::livebirth(creature mom, creature dad){

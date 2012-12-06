@@ -29,4 +29,8 @@ class testApp : public ofBaseApp{
         int maxUsers;
         void userEvent(ofxOpenNIUserEvent & event);
         ofxOpenNI openNIDevice;
+    ofxBox2d box2d;
+    vector		<ofxBox2dCircle>	circles;
+    void contactStart(ofxBox2dContactArgs &e);
+	void contactEnd(ofxBox2dContactArgs &e);
 };

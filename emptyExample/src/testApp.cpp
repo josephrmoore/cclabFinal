@@ -18,6 +18,18 @@ void testApp::setup(){
     openNIDevice.addUserGenerator();
     openNIDevice.setMaxNumUsers(2);
     openNIDevice.start();
+    
+    box2d.init();
+	box2d.setGravity(0, 0);
+	box2d.createBounds(0,0,ofGetWidth(),ofGetHeight());
+	box2d.setFPS(30.0);
+	box2d.registerGrabbing();
+    
+//	
+//    // register the listener so that we get the events
+//	ofAddListener(box2d.contactStartEvents, this, &testApp::contactStart);
+//	ofAddListener(box2d.contactEndEvents, this, &testApp::contactEnd);
+    
 }
 
 //--------------------------------------------------------------
@@ -26,6 +38,8 @@ void testApp::update(){
         creatures[i].update();
     }
     openNIDevice.update();
+    box2d.update();
+
 }
 
 //--------------------------------------------------------------
@@ -38,10 +52,10 @@ void testApp::draw(){
     int numUsers = openNIDevice.getNumTrackedUsers();
     
     if(numUsers<creatures.size()){
-        for(int i=0;i<creatures.size();i++){
-            creatures.erase(creatures.begin());
-            i = 0;
-        }
+//        for(int i=0;i<creatures.size();i++){
+//            creatures.erase(creatures.begin());
+//            i = 0;
+//        }
         
         for(int i=numUsers;i<maxUsers;i++){
             ps[i] = false;
@@ -58,11 +72,17 @@ void testApp::draw(){
     for(int i=0;i<numUsers;i++){
         if(numUsers == (i+1) && ps[i] == false){
             creature baby;
-            baby.immaculate();
+            baby.immaculate(box2d.getWorld());
             creatures.push_back(baby);
             ps[i] = true;
         }
     }
+    
+//    for(int i=0; i<circles.size(); i++) {
+//		ofFill();
+//		ofSetHexColor(0x90d4e3);
+//		circles[i].draw();
+//	}
 }
 
 //--------------------------------------------------------------
@@ -84,7 +104,7 @@ void testApp::keyPressed(int key){
     
     if(key == 'c'){
         creature baby;
-        baby.immaculate();
+        baby.immaculate(box2d.getWorld());
         creatures.push_back(baby);
     }
 }

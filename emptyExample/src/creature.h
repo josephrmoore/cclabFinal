@@ -20,7 +20,7 @@ public:
     void setup();
     void update();
     void draw();
-    void immaculate();
+    void immaculate(b2World* world);
     void livebirth(creature mom, creature dad);
     
     int adult_size, adult_sides, top_speed, adult_age;
@@ -30,9 +30,8 @@ public:
     float xpos, ypos, xvel, yvel, xacc, yacc;
     ofColor adult_color, curr_color, start_color;
     vector<ofPoint> points;
-
-//    bool doSleep;
-//    ofxBox2d box2d;
+    ofxBox2dCircle circle;
+    
 //    ofxBox2dPolygon* poly;
 //    b2BodyDef groundBodyDef;    
 //    b2Body* groundBody;
