@@ -95,126 +95,49 @@ void testApp::update(){
     }
     openNIDevice.update();
     box2d.update();
-//    if(timer<=1000){
-//        timer = ofGetElapsedTimeMillis()-millis;
-//        rev = false;
-//    } else {
-//        millis = ofGetElapsedTimeMillis();
-//        timer = ofGetElapsedTimeMillis()-millis;
-//        rev = true;
-//    }
-}
-
-//--------------------------------------------------------------
-void testApp::draw(){
-    
-    // get number of current users
     int numUsers = openNIDevice.getNumTrackedUsers();
-        
-//    if(numUsers<creatures.size()){
-//        for(int i=0;i<creatures.size();i++){
-//            creatures.erase(creatures.begin());
-//            i = 0;
-//        }
-//        for(int i=numUsers;i<maxUsers;i++){
-//            ps[i] = false;
-//        }
-//        
-//        if(numUsers == 1){
-//            p2 = false;
-//        } else if (numUsers == 0){
-//            p1 = false;
-//            p2 = false;
-//        }
-//    }
-    
     for(int i=0;i<numUsers;i++){
         ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
-            bool thisuser = false;
-            for(int j=0;j<creatures.size();j++){
-                for(int k=0;k<numUsers;k++){
-                    ofxOpenNIUser & user = openNIDevice.getTrackedUser(k);
-                }
-                if(user.getXnID() == creatures[j].userId){
-                    ofPoint & center = user.getCenter();
-//                    creatures[j].user_x = center.x;
-//                    creatures[j].user_y = center.y;
-                    ofPoint centerPt = ofPoint(center.x, center.y);
-                    ofPoint userPt = openNIDevice.worldToProjective(centerPt);
-                    creatures[j].user_x = userPt.x;
-                    creatures[j].user_y = userPt.y;
-                    cout << userPt.x << endl;
-                    cout << userPt.y << endl;
+        bool thisuser = false;
+        for(int j=0;j<creatures.size();j++){
+            if(user.getXnID() == creatures[j].userId){
+                ofPoint & center = user.getCenter();
+                ofPoint userPt = openNIDevice.worldToProjective(center);
+                creatures[j].user_x = userPt.x;
+                creatures[j].user_y = userPt.y;
+                if(userPt.x){
+                    ofVec2f loc, amt;
+                    int x1, y1, x2, y2, diffX, diffY;
+                    diffX = creatures[j].user_x-creatures[j].user_last_x;
+                    diffY = creatures[j].user_y-creatures[j].user_last_y * 2;
+                    x1 = creatures[j].circle.getPosition().x;
+                    x2 = diffX;
+                    y1 = creatures[j].circle.getPosition().y;
+                    y2 = diffY;
+                    cout << x1 << endl;
+                    cout << x2 << endl;
                     cout << " " << endl;
-                    if(rev == true && center.x!=0){
-                        ofVec2f loc, amt;
-                        int x1, y1, x2, y2;
-                        if(creatures[j].user_x-creatures[j].user_last_x<0){
-                            // force to the left
-                            x1 = creatures[j].xpos+50;
-                            x2 = ofMap((creatures[j].user_x-creatures[j].user_last_x), 0, ofGetWidth(), creatures[j].xpos-50, creatures[j].xpos+50);
-                        } else if (creatures[j].user_x-creatures[j].user_last_x>0){
-                            // force to the right
-                            x1 = creatures[j].xpos-50;
-                            x2 = ofMap((creatures[j].user_x-creatures[j].user_last_x), 0, ofGetWidth(), creatures[j].xpos-50, creatures[j].xpos+50);
-                        }
-                        if(creatures[j].user_y-creatures[j].user_last_y<0){
-                            // force toward up
-                            y1 = creatures[j].ypos+50;
-                            y2 = ofMap((creatures[j].user_y-creatures[j].user_last_y), 0, ofGetHeight(), creatures[j].ypos-50, creatures[j].ypos+50);
-                        } else if (creatures[j].user_y-creatures[j].user_last_y>0){
-                            // force toward down
-                            y1 = creatures[j].ypos-50;
-                            y2 = ofMap((creatures[j].user_y-creatures[j].user_last_y), 0, ofGetHeight(), creatures[j].ypos-50, creatures[j].ypos+50);
-                        }
-                        cout << x1 << endl;
-                        cout << x2 << endl;
-                        cout << " " << endl;
-                        cout << y1 << endl;
-                        cout << y2 << endl;
-                        cout << " " << endl;
-                        cout << "END" << endl;
-                        cout << " " << endl;
-                        loc = ofVec2f(x1, y1);
-                        amt = ofVec2f(x2, y2);
-//                        creatures[j].circle.addImpulseForce(amt, loc);
-                        creatures[j].user_last_x = userPt.x;
-                        creatures[j].user_last_y = userPt.y;  
+                    cout << y1 << endl;
+                    cout << y2 << endl;
+                    cout << " " << endl;
+                    cout << "END" << endl;
+                    cout << " " << endl;
+                    amt = ofVec2f(x2, y2);
+                    loc = ofVec2f(x1, y1);
+                    if(diffX > 10 || diffY > 10){
+                        creatures[j].circle.addImpulseForce(amt, loc);
                     }
-                    thisuser = true;
-                    if(user.isSkeleton()){
-                        creatures[j].draw();
-                    } else if (user.isFound()){
-                        creatures.erase(creatures.begin()+j);
-                        my_img.draw(200,0,ofGetWidth()-400,ofGetHeight());
-
-                        cout << "Calibrate please." << endl;
-                    } else {
-                        creatures.erase(creatures.begin()+j);
-                    }
+                    creatures[j].user_last_x = userPt.x;
+                    creatures[j].user_last_y = userPt.y;  
                 }
+                thisuser = true;
             }
-            if(!thisuser){
-                creature baby;
-                baby.immaculate(box2d.getWorld(), user.getXnID());
-                creatures.push_back(baby);
-            }
-
-//        cout << "Found:" << endl;
-//        cout << user.isFound() << endl;
-//        cout << "Tracking:" << endl;
-//        cout << user.isTracking() << endl;
-//        cout << "Skeleton:" << endl;
-//        cout << user.isSkeleton() << endl;
-//        cout << "Calibrating:" << endl;
-//        cout << user.isCalibrating() << endl;
-
-//        if(numUsers == (i+1) && ps[i] == false){
-//            creature baby;
-//            baby.immaculate(box2d.getWorld());
-//            creatures.push_back(baby);
-//            ps[i] = true;
-//        }
+        }
+        if(!thisuser){
+            creature baby;
+            baby.immaculate(box2d.getWorld(), user.getXnID());
+            creatures.push_back(baby);
+        }
     }
     bool extracreature = false;
     for(int i=0;i<creatures.size();i++){
@@ -228,12 +151,28 @@ void testApp::draw(){
             creatures.erase(creatures.begin()+i);
         }
     }
-    
-//    for(int i=0; i<circles.size(); i++) {
-//		ofFill();
-//		ofSetHexColor(0x90d4e3);
-//		circles[i].draw();
-//	}
+}
+
+//--------------------------------------------------------------
+void testApp::draw(){
+    int numUsers = openNIDevice.getNumTrackedUsers();
+    for(int i=0;i<numUsers;i++){
+        ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
+        for(int j=0;j<creatures.size();j++){
+            if(user.getXnID() == creatures[j].userId){
+                if(user.isSkeleton()){
+                    creatures[j].draw();
+                } else if (user.isFound()){
+                    creatures.erase(creatures.begin()+j);
+                    my_img.draw(200,0,ofGetWidth()-400,ofGetHeight());
+
+                    cout << "Calibrate please." << endl;
+                } else {
+                    creatures.erase(creatures.begin()+j);
+                }
+            }
+        }
+    }
 }
 
 //--------------------------------------------------------------
