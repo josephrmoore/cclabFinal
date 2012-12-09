@@ -34,6 +34,7 @@ class testApp : public ofBaseApp{
         // this is the function for contacts
         ofxOpenNI openNIDevice;
         ofxBox2d box2d;
+        ofImage my_img;
         vector		<ofxBox2dCircle>	circles;
         void contactStart(ofxBox2dContactArgs &e);
         void contactEnd(ofxBox2dContactArgs &e);

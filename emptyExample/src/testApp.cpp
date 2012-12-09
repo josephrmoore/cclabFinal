@@ -29,9 +29,12 @@ void testApp::setup(){
 	ofAddListener(box2d.contactStartEvents, this, &testApp::contactStart);
 	ofAddListener(box2d.contactEndEvents, this, &testApp::contactEnd);
     
-    rev = false;
+    rev = true;
     millis = ofGetElapsedTimeMillis();
     
+    if(!my_img.loadImage("http://www.greenfoot.org/images/calibration-pose.png?1345204192")){
+        ofLog(OF_LOG_ERROR,"Errorwhileloadingimage");
+    }
 //	
 //    // register the listener so that we get the events
 //	ofAddListener(box2d.contactStartEvents, this, &testApp::contactStart);
@@ -92,14 +95,14 @@ void testApp::update(){
     }
     openNIDevice.update();
     box2d.update();
-    if(timer<=1000){
-        timer = ofGetElapsedTimeMillis()-millis;
-        rev = false;
-    } else {
-        millis = ofGetElapsedTimeMillis();
-        timer = ofGetElapsedTimeMillis()-millis;
-        rev = true;
-    }
+//    if(timer<=1000){
+//        timer = ofGetElapsedTimeMillis()-millis;
+//        rev = false;
+//    } else {
+//        millis = ofGetElapsedTimeMillis();
+//        timer = ofGetElapsedTimeMillis()-millis;
+//        rev = true;
+//    }
 }
 
 //--------------------------------------------------------------
@@ -134,42 +137,58 @@ void testApp::draw(){
                 }
                 if(user.getXnID() == creatures[j].userId){
                     ofPoint & center = user.getCenter();
-                    creatures[j].user_x = center.x;
-                    creatures[j].user_y = center.z;
-                    
-                    cout << center.x << endl;
-                    cout << center.z << endl;
-                    if(rev == true && center.x>0){
-                        cout << "Rev" << endl;
+//                    creatures[j].user_x = center.x;
+//                    creatures[j].user_y = center.y;
+                    ofPoint centerPt = ofPoint(center.x, center.y);
+                    ofPoint userPt = openNIDevice.worldToProjective(centerPt);
+                    creatures[j].user_x = userPt.x;
+                    creatures[j].user_y = userPt.y;
+                    cout << userPt.x << endl;
+                    cout << userPt.y << endl;
+                    cout << " " << endl;
+                    if(rev == true && center.x!=0){
                         ofVec2f loc, amt;
                         int x1, y1, x2, y2;
                         if(creatures[j].user_x-creatures[j].user_last_x<0){
                             // force to the left
                             x1 = creatures[j].xpos+50;
-                            x2 = ofMap(creatures[j].xpos-50, 0, ofGetWidth()+100, 0, 1);
+                            x2 = ofMap((creatures[j].user_x-creatures[j].user_last_x), 0, ofGetWidth(), creatures[j].xpos-50, creatures[j].xpos+50);
                         } else if (creatures[j].user_x-creatures[j].user_last_x>0){
                             // force to the right
                             x1 = creatures[j].xpos-50;
-                            x2 = ofMap(creatures[j].xpos-50, 0, ofGetWidth()+100, 0, 1);
+                            x2 = ofMap((creatures[j].user_x-creatures[j].user_last_x), 0, ofGetWidth(), creatures[j].xpos-50, creatures[j].xpos+50);
                         }
                         if(creatures[j].user_y-creatures[j].user_last_y<0){
                             // force toward up
                             y1 = creatures[j].ypos+50;
-                            y2 = ofMap(creatures[j].ypos-50, 0, ofGetHeight()+100, 0, 1);
+                            y2 = ofMap((creatures[j].user_y-creatures[j].user_last_y), 0, ofGetHeight(), creatures[j].ypos-50, creatures[j].ypos+50);
                         } else if (creatures[j].user_y-creatures[j].user_last_y>0){
                             // force toward down
                             y1 = creatures[j].ypos-50;
-                            y2 = ofMap(creatures[j].ypos+50, 0, ofGetHeight()+100, 0, 1);
+                            y2 = ofMap((creatures[j].user_y-creatures[j].user_last_y), 0, ofGetHeight(), creatures[j].ypos-50, creatures[j].ypos+50);
                         }
+                        cout << x1 << endl;
+                        cout << x2 << endl;
+                        cout << " " << endl;
+                        cout << y1 << endl;
+                        cout << y2 << endl;
+                        cout << " " << endl;
+                        cout << "END" << endl;
+                        cout << " " << endl;
                         loc = ofVec2f(x1, y1);
                         amt = ofVec2f(x2, y2);
-                        creatures[j].circle.addImpulseForce(amt, loc);
-                        creatures[j].user_last_x = user.getCenter().x;
-                        creatures[j].user_last_y = user.getCenter().y;  
+//                        creatures[j].circle.addImpulseForce(amt, loc);
+                        creatures[j].user_last_x = userPt.x;
+                        creatures[j].user_last_y = userPt.y;  
                     }
                     thisuser = true;
                     if(user.isSkeleton()){
                         creatures[j].draw();
+                    } else if (user.isFound()){
+                        creatures.erase(creatures.begin()+j);
+                        my_img.draw(200,0,ofGetWidth()-400,ofGetHeight());
+
+                        cout << "Calibrate please." << endl;
                     } else {
                         creatures.erase(creatures.begin()+j);
                     }
