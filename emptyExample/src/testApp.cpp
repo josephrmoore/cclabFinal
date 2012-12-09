@@ -31,6 +31,7 @@ void testApp::setup(){
     
     rev = true;
     millis = ofGetElapsedTimeMillis();
+    timer = 0;
     
     if(!my_img.loadImage("http://www.greenfoot.org/images/calibration-pose.png?1345204192")){
         ofLog(OF_LOG_ERROR,"Errorwhileloadingimage");
@@ -100,35 +101,58 @@ void testApp::update(){
         ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
         bool thisuser = false;
         for(int j=0;j<creatures.size();j++){
+            if(creatures[j].justPushed == true){
+                cout<<"timeron"<<endl;
+                if(timer == 150){
+                    creatures[j].justPushed = false;
+                }
+                if(timer>=150){
+                    millis = ofGetElapsedTimeMillis();
+                    timer = 0;
+                }
+                if(ofGetElapsedTimeMillis()-millis>150){
+                    timer = 150;
+                } else {
+                    timer = ofGetElapsedTimeMillis()-millis;
+                }
+//                cout<<timer<<endl;
+            }
             if(user.getXnID() == creatures[j].userId){
                 ofPoint & center = user.getCenter();
                 ofPoint userPt = openNIDevice.worldToProjective(center);
                 creatures[j].user_x = userPt.x;
                 creatures[j].user_y = userPt.y;
+                if(!creatures[j].user_last_x){
+                    creatures[j].user_last_x = creatures[j].user_x;
+                }
+                if(!creatures[j].user_last_y){
+                    creatures[j].user_last_y = creatures[j].user_y;
+                }
                 if(userPt.x){
                     ofVec2f loc, amt;
                     int x1, y1, x2, y2, diffX, diffY;
                     diffX = creatures[j].user_x-creatures[j].user_last_x;
-                    diffY = creatures[j].user_y-creatures[j].user_last_y * 2;
+                    diffY = creatures[j].user_y-creatures[j].user_last_y;
                     x1 = creatures[j].circle.getPosition().x;
                     x2 = diffX;
                     y1 = creatures[j].circle.getPosition().y;
                     y2 = diffY;
-                    cout << x1 << endl;
-                    cout << x2 << endl;
-                    cout << " " << endl;
-                    cout << y1 << endl;
-                    cout << y2 << endl;
-                    cout << " " << endl;
-                    cout << "END" << endl;
-                    cout << " " << endl;
+//                    cout << x1 << endl;
+//                    cout << x2 << endl;
+//                    cout << " " << endl;
+//                    cout << y1 << endl;
+//                    cout << y2 << endl;
+//                    cout << " " << endl;
+//                    cout << "END" << endl;
+//                    cout << " " << endl;
                     amt = ofVec2f(x2, y2);
                     loc = ofVec2f(x1, y1);
-                    if(diffX > 10 || diffY > 10){
+                    if((diffX > 3 || diffY > 3) && creatures[j].justPushed == false){
                         creatures[j].circle.addImpulseForce(amt, loc);
-                    }
-                    creatures[j].user_last_x = userPt.x;
-                    creatures[j].user_last_y = userPt.y;  
+                        creatures[j].justPushed = true;
+                        creatures[j].user_last_x = userPt.x;
+                        creatures[j].user_last_y = userPt.y;
+                    }  
                 }
                 thisuser = true;
             }

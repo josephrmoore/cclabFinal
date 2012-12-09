@@ -27,10 +27,12 @@ public:
     int start_size, start_sides;
     int curr_size, curr_sides, curr_age;
     int born_on;
+    int longevity, decline, decayRate, curr_decay;
     int userId;
     int user_x, user_y, user_last_x, user_last_y;
     bool colliding;
     bool hasUser;
+    bool justPushed;
     float xpos, ypos, xvel, yvel, xacc, yacc;
     ofColor adult_color, curr_color, start_color;
     vector<ofPoint> points;

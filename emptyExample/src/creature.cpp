@@ -28,130 +28,47 @@ void creature::setup() {
     this->circle.setPhysics(3.0, 0.53, 0.1);
     this->hasUser = false;
     this->colliding = false;
-
-//    b2Vec2 gravity(0.0f, -10.0f);
-//    doSleep = true;
-//    b2World world(gravity, doSleep);
-//    groundBodyDef.position.Set(0.0f, -10.0f);
-//    groundBody = world.CreateBody(&groundBodyDef);
-        
-//    for(int i=0;i<(this->curr_sides);i++){
-//        int cX = this->xpos;
-//        int cY = this->ypos;
-//        float x = cX + (float)(this->curr_size * sin((i+1) * ((2*PI) / this->curr_sides)));
-//        float y = cY + (float)(this->curr_size * -cos((i+1) * ((2*PI) / this->curr_sides)));
-//        ofPoint point;
-//        point.set((int)x, (int)y);
-//        points.push_back(point);
-//    }
-    
-//    poly = new ofxBox2dPolygon;
-//    for(int j=0;j<points.size();j++){
-//        poly->addVertex(points[j]);
-//    }
-//    poly->setPhysics(3., .5, .3);
-//    poly->create(&world);
-
+    this->justPushed = false;
+    this->curr_decay = 0;
 }
 
 
 
 //------------------------------------------------------------------
 void creature::update() {
-    this->curr_age = (int)((ofGetElapsedTimeMillis() - this->born_on)/1000);
+    this->curr_age = ofGetElapsedTimeMillis() - this->born_on;
     if(this->curr_age < this->adult_age){
-        float percent = (((ofGetElapsedTimeMillis() - this->born_on))/((float)this->adult_age*1000));
+        float percent = ((float)(ofGetElapsedTimeMillis() - this->born_on)/(float)this->adult_age);
         this->curr_size = ((this->adult_size-this->start_size)*percent)+this->start_size;
-//        this->curr_sides = ((this->adult_sides-this->start_sides)*percent)+this->start_sides;
-//        if(this->curr_color.r<this->adult_color.r){
             this->curr_color.r = (int)(this->adult_color.r*percent);
-//        } else if (this->curr_color.g<this->adult_color.g){
             this->curr_color.g = (int)(this->adult_color.g*percent);
-//        } else {
             this->curr_color.b = (int)(this->adult_color.b*percent);
-//        }
+    } else if(this->curr_age > this->longevity){
+        // death fx
+        this->curr_size = 0;
+    } else if(this->curr_age>this->decline) {
+        // dying fx
+        if(this->curr_decay>=this->decayRate){
+            this->curr_size -= 1;
+            this->curr_color.setSaturation(this->curr_color.getSaturation()-3);
+            this->curr_decay = 0;
+        } else {
+            this->curr_decay++;
+        }
     } else {
         this->curr_color = this->adult_color;
         this->curr_size = this->adult_size;
-//        this->curr_sides = this->adult_sides;
     }
-    if(this->xpos > ofGetWidth()){
-        this->xpos = ofGetWidth();
-        this->xvel *= -1;
-    } else if (this->xpos < 0){
-        this->xpos = 0;
-        this->xvel *= -1;
-    }
-    if(this->ypos > ofGetHeight()){
-        this->ypos = ofGetHeight();
-        this->yvel *= -1;
-    } else if (this->ypos < 0){
-        this->ypos = 0;
-        this->yvel *= -1;
-    }
-    
-    this->xpos += this->xvel;
-    this->ypos += this->yvel;
 }
 
 
 
 //------------------------------------------------------------------
 void creature::draw() {
-    
-//    ofSetPolyMode(OF_POLY_WINDING_NONZERO);
-//    ofSetColor(this->curr_color.r,this->curr_color.g,this->curr_color.b);
-//    ofFill();
-//    ofBeginShape();
-//    for(int i=0;i<(this->curr_sides);i++){
-//        int cX = this->xpos;
-//        int cY = this->ypos;
-//        float x = cX + (float)(this->curr_size * sin((i+1) * ((2*PI) / this->curr_sides)));
-//        float y = cY + (float)(this->curr_size * -cos((i+1) * ((2*PI) / this->curr_sides)));
-//        ofVertex((int)x, (int)y);
-//    }
-//    
-//    ofEndShape();  
-    
     ofFill();
     ofSetColor(this->curr_color);
     this->circle.setRadius(curr_size);
     this->circle.draw();
-//    Polygon poly;
-//    for(int i=0;i<(this->curr_sides);i++){
-//        int cX = this->xpos;
-//        int cY = this->ypos;
-//        float x = cX + (float)(this->curr_size * sin((i+1) * ((2*PI) / this->curr_sides)));
-//        float y = cY + (float)(this->curr_size * -cos((i+1) * ((2*PI) / this->curr_sides)));
-//        points[i].set((int)x, (int)y);
-//        poly.AddVertex(points[i]);
-//    }
-
-//    vector<ofPoint> points;
-//    
-//    for(int i=0;i<(this->curr_sides);i++){
-//        int cX = 300;
-//        int cY = 300;
-//        float x = cX + (float)(this->curr_size * sin((i+1) * ((2*PI) / this->curr_sides)));
-//        float y = cY + (float)(this->curr_size * -cos((i+1) * ((2*PI) / this->curr_sides)));
-//        ofPoint point;
-//        point.set((int)x, (int)y);
-//        points.push_back(point);
-//    }
-//    
-//    ofxBox2dPolygon* poly = new ofxBox2dPolygon;
-//    for(int j=0;j<points.size();j++){
-//        poly->addVertex(points[j]);
-//    }
-//    b2World* world = box2d.getWorld();
-//    poly->setPhysics(3., .5, .3);
-//    
-//    b2PolygonShape polygon;
-//    
-//    polygon.Set(vertices, count);
-//    poly->create(world);
-//    //and then anywhere
-//    poly->draw();
 }
 
 void creature::immaculate(b2World* world, int i){
@@ -160,7 +77,10 @@ void creature::immaculate(b2World* world, int i){
     this->adult_color.r = (int)ofRandom(255);
     this->adult_color.g = (int)ofRandom(255);
     this->adult_color.b = (int)ofRandom(255);
-    this->adult_age = (int)ofRandom(10,30);
+    this->adult_age = (int)ofRandom(5,10)*1000;
+    this->longevity = (int)ofRandom(3,6)*this->adult_age;
+    this->decline = this->longevity-this->adult_age;
+    this->decayRate = (int)ofRandom(5,15);
     this->adult_sides = (int)ofRandom(3,11);
     this->born_on = ofGetElapsedTimeMillis();
     this->circle.setup(world, this->xpos, this->ypos, this->curr_size/2);
