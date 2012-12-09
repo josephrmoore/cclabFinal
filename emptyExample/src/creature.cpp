@@ -27,6 +27,7 @@ void creature::setup() {
     this->yvel = ofRandom(5);
     this->circle.setPhysics(3.0, 0.53, 0.1);
     this->hasUser = false;
+    this->colliding = false;
 
 //    b2Vec2 gravity(0.0f, -10.0f);
 //    doSleep = true;

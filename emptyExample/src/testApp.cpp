@@ -25,11 +25,64 @@ void testApp::setup(){
 	box2d.setFPS(30.0);
 	box2d.registerGrabbing();
     
+    // register the listener so that we get the events
+	ofAddListener(box2d.contactStartEvents, this, &testApp::contactStart);
+	ofAddListener(box2d.contactEndEvents, this, &testApp::contactEnd);
+    
+    rev = false;
+    millis = ofGetElapsedTimeMillis();
+    
 //	
 //    // register the listener so that we get the events
 //	ofAddListener(box2d.contactStartEvents, this, &testApp::contactStart);
 //	ofAddListener(box2d.contactEndEvents, this, &testApp::contactEnd);
     
+}
+
+//--------------------------------------------------------------
+void testApp::contactStart(ofxBox2dContactArgs &e) {
+	if(e.a != NULL && e.b != NULL) { 
+		
+		// if we collide with the ground we do not
+		// want to play a sound. this is how you do that
+		if(e.a->GetType() == b2Shape::e_circle && e.b->GetType() == b2Shape::e_circle) {
+//            cout << e.a->GetBody()->GetUserData() << endl;
+//			cout << e.b->GetBody()->GetUserData() << endl;
+//            ofxBox2dCircle collided;
+//            for (int i=0; i<creatures.size();i++){
+//                if(creatures[i].collided = ?????){
+//                    GET COLLISION PARTNER
+//                    DO BREEDING FXInfo
+//                }
+//            }
+			
+//			if() {
+//
+//			}
+//			
+//			if() {
+//
+//			}
+		}
+	}
+}
+
+//--------------------------------------------------------------
+void testApp::contactEnd(ofxBox2dContactArgs &e) {
+	if(e.a != NULL && e.b != NULL) { 
+		
+//        cout << e.a->GetBody()->GetUserData() << endl;
+//        cout << e.b->GetBody()->GetUserData() << endl;
+
+
+//		if() {
+//			
+//		}
+//		
+//		if() {
+//			
+//		}
+	}
 }
 
 //--------------------------------------------------------------
@@ -39,15 +92,19 @@ void testApp::update(){
     }
     openNIDevice.update();
     box2d.update();
-
+    if(timer<=1000){
+        timer = ofGetElapsedTimeMillis()-millis;
+        rev = false;
+    } else {
+        millis = ofGetElapsedTimeMillis();
+        timer = ofGetElapsedTimeMillis()-millis;
+        rev = true;
+    }
 }
 
 //--------------------------------------------------------------
 void testApp::draw(){
     
-    for(int i=0; i<creatures.size();i++){
-        creatures[i].draw();
-    }
     // get number of current users
     int numUsers = openNIDevice.getNumTrackedUsers();
         
@@ -76,8 +133,42 @@ void testApp::draw(){
                     ofxOpenNIUser & user = openNIDevice.getTrackedUser(k);
                 }
                 if(user.getXnID() == creatures[j].userId){
+                    ofPoint & center = user.getCenter();
+                    creatures[j].user_x = center.x;
+                    creatures[j].user_y = center.z;
+                    
+                    cout << center.x << endl;
+                    cout << center.z << endl;
+                    if(rev == true && center.x>0){
+                        cout << "Rev" << endl;
+                        ofVec2f loc, amt;
+                        int x1, y1, x2, y2;
+                        if(creatures[j].user_x-creatures[j].user_last_x<0){
+                            // force to the left
+                            x1 = creatures[j].xpos+50;
+                            x2 = ofMap(creatures[j].xpos-50, 0, ofGetWidth()+100, 0, 1);
+                        } else if (creatures[j].user_x-creatures[j].user_last_x>0){
+                            // force to the right
+                            x1 = creatures[j].xpos-50;
+                            x2 = ofMap(creatures[j].xpos-50, 0, ofGetWidth()+100, 0, 1);
+                        }
+                        if(creatures[j].user_y-creatures[j].user_last_y<0){
+                            // force toward up
+                            y1 = creatures[j].ypos+50;
+                            y2 = ofMap(creatures[j].ypos-50, 0, ofGetHeight()+100, 0, 1);
+                        } else if (creatures[j].user_y-creatures[j].user_last_y>0){
+                            // force toward down
+                            y1 = creatures[j].ypos-50;
+                            y2 = ofMap(creatures[j].ypos+50, 0, ofGetHeight()+100, 0, 1);
+                        }
+                        loc = ofVec2f(x1, y1);
+                        amt = ofVec2f(x2, y2);
+                        creatures[j].circle.addImpulseForce(amt, loc);
+                        creatures[j].user_last_x = user.getCenter().x;
+                        creatures[j].user_last_y = user.getCenter().y;  
+                    }
                     thisuser = true;
-                    if(user.isTracking()){
+                    if(user.isSkeleton()){
                         creatures[j].draw();
                     } else {
                         creatures.erase(creatures.begin()+j);

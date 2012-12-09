@@ -27,10 +27,14 @@ class testApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
         int maxUsers;
+        int timer;
+        int millis;
+        bool rev;
         void userEvent(ofxOpenNIUserEvent & event);
+        // this is the function for contacts
         ofxOpenNI openNIDevice;
-    ofxBox2d box2d;
-    vector		<ofxBox2dCircle>	circles;
-    void contactStart(ofxBox2dContactArgs &e);
-	void contactEnd(ofxBox2dContactArgs &e);
+        ofxBox2d box2d;
+        vector		<ofxBox2dCircle>	circles;
+        void contactStart(ofxBox2dContactArgs &e);
+        void contactEnd(ofxBox2dContactArgs &e);
 };

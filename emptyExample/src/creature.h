@@ -28,11 +28,14 @@ public:
     int curr_size, curr_sides, curr_age;
     int born_on;
     int userId;
+    int user_x, user_y, user_last_x, user_last_y;
+    bool colliding;
     bool hasUser;
     float xpos, ypos, xvel, yvel, xacc, yacc;
     ofColor adult_color, curr_color, start_color;
     vector<ofPoint> points;
     ofxBox2dCircle circle;
+    ofxBox2dCircle collided;
 //    ofxBox2dPolygon* poly;
 //    b2BodyDef groundBodyDef;    
 //    b2Body* groundBody;
