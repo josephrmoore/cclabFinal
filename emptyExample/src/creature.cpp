@@ -30,6 +30,9 @@ void creature::setup() {
     this->colliding = false;
     this->justPushed = false;
     this->curr_decay = 0;
+    this->underCreation = false;
+    this->underDestruction = false;
+    this->total_children = ofRandom(10);
 }
 
 
@@ -49,8 +52,8 @@ void creature::update() {
     } else if(this->curr_age>this->decline) {
         // dying fx
         if(this->curr_decay>=this->decayRate){
-            this->curr_size -= 1;
-            this->curr_color.setSaturation(this->curr_color.getSaturation()-3);
+            this->curr_size -= 2;
+            this->curr_color.setSaturation(this->curr_color.getSaturation()-10);
             this->curr_decay = 0;
         } else {
             this->curr_decay++;
@@ -67,13 +70,13 @@ void creature::update() {
 void creature::draw() {
     ofFill();
     ofSetColor(this->curr_color);
-    this->circle.setRadius(curr_size);
+    this->circle.setRadius(this->curr_size);
     this->circle.draw();
 }
 
 void creature::immaculate(b2World* world, int i){
     this->setup();
-    this->adult_size = (int)ofRandom(50, 200);
+    this->adult_size = (int)ofRandom(20, 80);
     this->adult_color.r = (int)ofRandom(255);
     this->adult_color.g = (int)ofRandom(255);
     this->adult_color.b = (int)ofRandom(255);
@@ -88,22 +91,24 @@ void creature::immaculate(b2World* world, int i){
     this->userId = i;
 }
 
-void creature::livebirth(creature mom, creature dad){
-    float percentage_mom, percentage_dad;
-    creature baby;
-    percentage_mom = ofRandom(1);
-    percentage_dad = 1-percentage_mom;
-    baby.adult_size = (int)mom.adult_size*percentage_mom + (int)dad.adult_size*percentage_dad;
-    percentage_mom = ofRandom(1);
-    percentage_dad = 1-percentage_mom;
-    baby.adult_age = (int)mom.adult_age*percentage_mom + (int)dad.adult_age*percentage_dad;
-    percentage_mom = ofRandom(1);
-    percentage_dad = 1-percentage_mom;
-    baby.adult_color.r = (int)mom.adult_color.r*percentage_mom + (int)dad.adult_color.r*percentage_dad;
-    percentage_mom = ofRandom(1);
-    percentage_dad = 1-percentage_mom;
-    baby.adult_color.g = (int)mom.adult_color.g*percentage_mom + (int)dad.adult_color.g*percentage_dad;
-    percentage_mom = ofRandom(1);
-    percentage_dad = 1-percentage_mom;
-    baby.adult_color.b = (int)mom.adult_color.b*percentage_mom + (int)dad.adult_color.b*percentage_dad;
+void creature::livebirth(creature me, creature partner, b2World* world, int i){
+//    float percentage_me, percentage_partner;
+//    percentage_me = ofRandom(1);
+//    percentage_partner = 1-percentage_me;
+//    creature baby;
+//    baby.setup();
+//    baby.adult_size = (int)me.adult_size*percentage_me + (int)partner.adult_size*percentage_partner;
+//    baby.adult_color.r = (int)me.adult_color.r*percentage_me + (int)partner.adult_color.r*percentage_partner;
+//    baby.adult_color.g = (int)me.adult_color.g*percentage_me + (int)partner.adult_color.g*percentage_partner;
+//    baby.adult_color.b = (int)me.adult_color.b*percentage_me + (int)partner.adult_color.b*percentage_partner;
+//    baby.adult_age = (int)me.adult_age*percentage_me + (int)partner.adult_age*percentage_partner;
+//    baby.longevity = (int)me.longevity*percentage_me + (int)partner.longevity*percentage_partner;
+//    baby.decline = (int)me.decline*percentage_me + (int)partner.decline*percentage_partner;
+//    baby.decayRate = (int)me.decayRate*percentage_me + (int)partner.decayRate*percentage_partner;
+//    baby.adult_sides = (int)me.adult_sides*percentage_me + (int)partner.adult_sides*percentage_partner;
+//    baby.born_on = ofGetElapsedTimeMillis();
+//    baby.circle.setup(world, 0, 0, 5);
+//    baby.circle.setVelocity(baby.xvel, baby.yvel);
+//    baby.userId = i;
+//    npc.push_back(baby);
 }

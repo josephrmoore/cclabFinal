@@ -5,6 +5,7 @@
 #include "ofxBox2d.h"
 #include "Polygon.h"
 #include "ofxOpenNI.h"
+#include "ofLight.h"
 
 
 class testApp : public ofBaseApp{
@@ -15,6 +16,7 @@ class testApp : public ofBaseApp{
         void exit();
         
         vector <creature> creatures;
+        vector <creature> npc;
         vector <bool> ps;
 		
         void keyPressed(int key);
@@ -27,9 +29,12 @@ class testApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
         int maxUsers;
-        int timer;
+        int numUsers;
+        int timer, timerInterval;
         int millis;
-        bool rev;
+        int totalNpcs;
+        int p1, p2;
+        bool rev, thisuser, extracreature, newCircle;
         void userEvent(ofxOpenNIUserEvent & event);
         // this is the function for contacts
         ofxOpenNI openNIDevice;

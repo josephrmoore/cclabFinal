@@ -13,6 +13,7 @@
 #include "ofMain.h"
 #include "ofxOpenNI.h"
 #include "ofxBox2d.h"
+#include "ofMaterial.h"
 
 class creature {
 
@@ -21,8 +22,8 @@ public:
     void update();
     void draw();
     void immaculate(b2World* world, int i);
-    void livebirth(creature mom, creature dad);
-    
+    void livebirth(creature me, creature partner, b2World* world, int i);
+
     int adult_size, adult_sides, top_speed, adult_age;
     int start_size, start_sides;
     int curr_size, curr_sides, curr_age;
@@ -30,9 +31,11 @@ public:
     int longevity, decline, decayRate, curr_decay;
     int userId;
     int user_x, user_y, user_last_x, user_last_y;
+    int total_children;
     bool colliding;
     bool hasUser;
     bool justPushed;
+    bool underCreation, underDestruction;
     float xpos, ypos, xvel, yvel, xacc, yacc;
     ofColor adult_color, curr_color, start_color;
     vector<ofPoint> points;
