@@ -11,12 +11,12 @@
 //------------------------------------------------------------------
 void creature::setup() {
     this->top_speed = (int)ofRandom(10,50);
-    this->start_size = 10;
+    this->start_size = 5;
     this->start_sides = 3;
     this->start_color.r = 0;
     this->start_color.g = 0;
     this->start_color.b = 0;
-    this->curr_size = 10;
+    this->curr_size = 5;
     this->curr_sides = 3;
     this->curr_color.r = 0;
     this->curr_color.g = 0;
@@ -76,7 +76,7 @@ void creature::draw() {
 
 void creature::immaculate(b2World* world, int i){
     this->setup();
-    this->adult_size = (int)ofRandom(20, 80);
+    this->adult_size = (int)ofRandom(10, 50);
     this->adult_color.r = (int)ofRandom(255);
     this->adult_color.g = (int)ofRandom(255);
     this->adult_color.b = (int)ofRandom(255);

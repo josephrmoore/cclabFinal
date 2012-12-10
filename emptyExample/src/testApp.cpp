@@ -37,7 +37,8 @@ void testApp::setup(){
     newCircle = false;
     p1 = 0;
     p2= 0;
-    if(!my_img.loadImage("cal.png")){
+    state = 0;
+    if(!my_img.loadImage("bk.png")){
         ofLog(OF_LOG_ERROR,"Errorwhileloadingimage");
     }
     for(int i=0;i<totalNpcs;i++){
@@ -139,16 +140,17 @@ void testApp::contactEnd(ofxBox2dContactArgs &e) {
 
 //--------------------------------------------------------------
 void testApp::update(){
+    if(state == 0){
     numUsers = openNIDevice.getNumTrackedUsers();
     for(int i=0;i<numUsers;i++){
         ofxOpenNIUser & user = openNIDevice.getTrackedUser(i);
         ofPoint & center = user.getCenter();
         ofPoint userPt = openNIDevice.worldToProjective(center);
         if(i==0){
-            p1 = userPt.x;
+            p1 = ofMap(userPt.x, 0, 640, 0, 1400);
         } 
         if(i==1){
-            p2 = userPt.x;
+            p2 = ofMap(userPt.x, 0, 640, 0, 1400);
         }
     }
     if(npc.size()<totalNpcs){
@@ -167,7 +169,7 @@ void testApp::update(){
     for(int i=0; i<npc.size();i++){
         npc[i].update();
         if(p1 != 0 && p2 != 0){
-            if((npc.size()<100) && ((npc[i].circle.getPosition().x > p1 && npc[i].circle.getPosition().x < p1+100) && (npc[i].curr_size == npc[i].adult_size))){
+            if((npc.size()<300) && ((npc[i].circle.getPosition().x > p1 && npc[i].circle.getPosition().x < p1+100) && (npc[i].curr_size == npc[i].adult_size))){
                 creature baby;
                 baby.immaculate(box2d.getWorld(), 0);
                 npc.push_back(baby);
@@ -178,6 +180,12 @@ void testApp::update(){
         }
         if(npc[i].curr_size == 0){
             npc.erase(npc.begin()+i);
+        }
+        if(npc.size()>=300){
+            state = 1;
+        }
+        if(npc.size() == 0){
+            state = 2;
         }
     }
     openNIDevice.update();
@@ -276,10 +284,15 @@ void testApp::update(){
 //        }
 //    }
 //    cout<<creatures.size()<<endl;
+    }
 }
 
 //--------------------------------------------------------------
 void testApp::draw(){
+    ofSetHexColor(0xffffff);
+    my_img.draw(0,20,ofGetWidth(),ofGetHeight());
+
+    if(state == 0){
 //    ofBackground(0,0,0);
 
 //    cout<<ofGetLightingEnabled()<<endl;
@@ -320,6 +333,11 @@ void testApp::draw(){
                 }
             }  
         }
+    }
+    } else if (state == 1){
+        cout<<"Creation wins"<<endl;
+    } else if (state == 2){
+        cout<<"Destruction wins."<<endl;
     }
 }
 

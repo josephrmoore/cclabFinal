@@ -34,6 +34,7 @@ class testApp : public ofBaseApp{
         int millis;
         int totalNpcs;
         int p1, p2;
+        int state;
         bool rev, thisuser, extracreature, newCircle;
         void userEvent(ofxOpenNIUserEvent & event);
         // this is the function for contacts
